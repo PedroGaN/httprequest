@@ -16,7 +16,7 @@ class ImageViewController: UIViewController {
         
         //loadWithData()
 
-        Network.shared.newPost()
+        Network.shared.JSONPlaceholderPost()
         //loadWithURLSession()
         
     }

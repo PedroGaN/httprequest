@@ -22,6 +22,23 @@ class Post: Codable {
     
 }
 
+class PostRS: Codable {
+    
+    let id: Int
+    let userId: Int
+    let title: String
+    let body: String
+    
+    init(title: String, body: String, userId: Int, id: Int) {
+        self.title = title
+        self.body = body
+        self.userId = userId
+        self.id = id
+    }
+    
+    
+}
+
 class Network: PicsumAPI {
     
         
@@ -38,7 +55,7 @@ class Network: PicsumAPI {
         var postData: Data!
         
         do {
-            let postSerilized = try! encoder.encode(newPost)
+            //let postSerilized = try! encoder.encode(newPost)
             postData = try! Data(encoder.encode(newPost))
         }catch{
             print(error)
@@ -81,6 +98,48 @@ class Network: PicsumAPI {
             completionHandler(data!)
             
         }.resume()
+        
+    }
+    
+    func JSONPlaceholderPost(){
+        
+        let headers = ["content-type": "application/json; charset=UTF-8"]
+        
+        let encoder = JSONEncoder.init()
+        let decoder = JSONDecoder.init()
+        
+        let newPostTest = Post(title: "POST", body: "JSONPlaceholderPost", userId: 1)
+        
+        var httpRequest = URLRequest(url: URL(string: "https://jsonplaceholder.typicode.com/posts")!)
+        
+        httpRequest.httpMethod = "POST"
+        do {
+            httpRequest.httpBody = try! encoder.encode(newPostTest)
+        }catch{
+            print(error)
+        }
+        httpRequest.allHTTPHeaderFields = headers
+        
+        let session = URLSession.shared
+        let dataTask = session.dataTask(with: httpRequest as URLRequest, completionHandler: { (data, response, error) -> Void in
+          if (error != nil) {
+            print(error)
+          } else {
+            let httpResponse = response as? HTTPURLResponse
+            print(httpResponse)
+            do {
+                //httpRequest.httpBody = try! encoder.encode(newPostTest)
+                let post = try! decoder.decode(PostRS.self, from: data!)
+                print(post)
+            }catch{
+                print(error)
+            }
+
+          }
+        })
+
+        dataTask.resume()
+        
         
     }
     
